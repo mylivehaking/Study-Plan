@@ -1083,23 +1083,10 @@
             row.classList.remove('completed');
           }
         });
-        
-        // ذخیره در localStorage
-        localStorage.setItem('studyPlanStats', JSON.stringify({
-          completed: checkedCount,
-          progress: progress
-        }));
       }
       
-      // بازیابی وضعیت از localStorage
-      checkboxes.forEach((checkbox, index) => {
-        const savedState = localStorage.getItem(`studyPlanDay_${checkbox.dataset.day}`);
-        if (savedState === 'true') {
-          checkbox.checked = true;
-        }
-        
+      checkboxes.forEach((checkbox) => {
         checkbox.addEventListener('change', function() {
-          localStorage.setItem(`studyPlanDay_${this.dataset.day}`, this.checked);
           updateStats();
           
           // انیمیشن هنگام تیک زدن
@@ -1117,7 +1104,6 @@
         if (confirm('آیا از بازنشانی تمام تیک‌ها مطمئن هستید؟')) {
           checkboxes.forEach(checkbox => {
             checkbox.checked = false;
-            localStorage.setItem(`studyPlanDay_${checkbox.dataset.day}`, false);
           });
           updateStats();
         }
@@ -1128,15 +1114,7 @@
         document.body.classList.toggle('dark-mode');
         const isDarkMode = document.body.classList.contains('dark-mode');
         themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
-        localStorage.setItem('studyTheme', isDarkMode ? 'dark' : 'light');
       });
-      
-      // بازیابی تم از localStorage
-      const savedTheme = localStorage.getItem('studyTheme');
-      if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        themeToggle.innerHTML = '☀️';
-      }
       
       // بروزرسانی اولیه آمار
       updateStats();
@@ -1154,32 +1132,13 @@
       }
 
       if (timerHours && timerMinutes && timerSeconds && timerStartPauseBtn && timerResetBtn) {
-        const TIMER_STORAGE_KEY = 'studyTimerState';
-
         let timerPresetSeconds = 45 * 60;
         let timerRemainingSeconds = timerPresetSeconds;
         let timerRunning = false;
         let timerEndTimeMs = null;
 
-        function loadTimerState() {
-          try {
-            const raw = localStorage.getItem(TIMER_STORAGE_KEY);
-            if (!raw) return null;
-            const parsed = JSON.parse(raw);
-            if (!parsed || typeof parsed !== 'object') return null;
-            return parsed;
-          } catch (e) {
-            return null;
-          }
-        }
-
         function saveTimerState() {
-          localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify({
-            presetSeconds: timerPresetSeconds,
-            remainingSeconds: timerRemainingSeconds,
-            running: timerRunning,
-            endTimeMs: timerEndTimeMs
-          }));
+          // No longer saving to localStorage
         }
 
         function recomputeRemainingFromEndTime() {
@@ -1294,43 +1253,7 @@
           });
         }
 
-        const savedTimerState = loadTimerState();
-        if (savedTimerState) {
-          if (typeof savedTimerState.presetSeconds === 'number') {
-            timerPresetSeconds = savedTimerState.presetSeconds;
-          }
-
-          if (typeof savedTimerState.running === 'boolean') {
-            timerRunning = savedTimerState.running;
-          }
-
-          if (timerRunning && typeof savedTimerState.endTimeMs === 'number') {
-            timerEndTimeMs = savedTimerState.endTimeMs;
-            recomputeRemainingFromEndTime();
-            if (timerRemainingSeconds <= 0) {
-              timerRemainingSeconds = 0;
-              timerRunning = false;
-              timerEndTimeMs = null;
-              saveTimerState();
-              updateTimerUI();
-            } else {
-              timerRunning = false;
-              updateTimerUI();
-              startTimer();
-            }
-          } else {
-            if (typeof savedTimerState.remainingSeconds === 'number') {
-              timerRemainingSeconds = savedTimerState.remainingSeconds;
-            } else {
-              timerRemainingSeconds = timerPresetSeconds;
-            }
-            timerRunning = false;
-            timerEndTimeMs = null;
-            updateTimerUI();
-          }
-        } else {
-          updateTimerUI();
-        }
+        updateTimerUI();
       }
 
       // آپدیت وضعیت سطرها
