@@ -2,10 +2,9 @@
 <html lang="fa">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>ورود / ثبت‌نام</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -21,7 +20,7 @@
             background: white;
             padding: 25px;
             border-radius: 12px;
-            width: 320px;
+            width: 330px;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
             text-align: center;
         }
@@ -46,6 +45,12 @@
         button:hover {
             background: #45a049;
         }
+        .link {
+            margin-top: 10px;
+            color: #2196F3;
+            cursor: pointer;
+            font-size: 14px;
+        }
         .msg {
             margin-top: 10px;
             color: red;
@@ -57,65 +62,82 @@
 <body>
 
 <div class="box">
-    <h2>ورود به حساب</h2>
+    <h2>ورود / ثبت‌نام</h2>
 
     <input id="email" type="email" placeholder="ایمیل">
-    <input id="password" type="password" placeholder="رمز عبور">
 
-    <button onclick="login()">ورود</button>
-    <button onclick="signup()" style="background:#2196F3;margin-top:8px;">ساخت حساب</button>
+    <button onclick="loginWithCode()" style="background:#9C27B0;">ورود با کد یک‌بار مصرف</button>
+    <button onclick="signup()" style="background:#2196F3;">ساخت حساب (ارسال لینک)</button>
+
+    <div class="link" onclick="resetPassword()">فراموشی رمز عبور</div>
 
     <div class="msg" id="msg"></div>
 </div>
 
 <script>
-    // اتصال به Supabase
     const SUPABASE_URL = "https://ybriihvekjhzrbrnvpyq.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_tyAGKGzwzxfoiMZMjtK3ww_bey6DEcT";
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ساخت حساب
-    async function signup() {
-        const email = document.getElementById("email").value;
-        const pass = document.getElementById("password").value;
+    const emailInput = document.getElementById("email");
+    const msg = document.getElementById("msg");
 
-        if (!email || !pass) {
-            document.getElementById("msg").innerText = "ایمیل و رمز را وارد کن";
+    // ورود با کد یک‌بار مصرف (OTP / Magic Link)
+    async function loginWithCode() {
+        const email = emailInput.value;
+
+        if (!email) {
+            msg.innerText = "ایمیل را وارد کن";
+            return;
+        }
+
+        const { error } = await client.auth.signInWithOtp({
+            email: email,
+            options: {
+                emailRedirectTo: "https://mylivehaking.github.io/Study-Plan"
+            }
+        });
+
+        if (error) msg.innerText = error.message;
+        else msg.innerText = "کد ورود به ایمیل ارسال شد.";
+    }
+
+    // ساخت حساب با لینک تأیید
+    async function signup() {
+        const email = emailInput.value;
+
+        if (!email) {
+            msg.innerText = "ایمیل را وارد کن";
             return;
         }
 
         const { error } = await client.auth.signUp({
             email: email,
-            password: pass
+            password: crypto.randomUUID(), // رمز تصادفی چون ورود با رمز نمی‌خوای
+            options: {
+                emailRedirectTo: "https://mylivehaking.github.io/Study-Plan"
+            }
         });
 
-        if (error) {
-            document.getElementById("msg").innerText = error.message;
-        } else {
-            document.getElementById("msg").innerText = "حساب ساخته شد. ایمیل را چک کن.";
-        }
+        if (error) msg.innerText = error.message;
+        else msg.innerText = "لینک تأیید به ایمیل ارسال شد.";
     }
 
-    // ورود
-    async function login() {
-        const email = document.getElementById("email").value;
-        const pass = document.getElementById("password").value;
+    // فراموشی رمز
+    async function resetPassword() {
+        const email = emailInput.value;
 
-        if (!email || !pass) {
-            document.getElementById("msg").innerText = "ایمیل و رمز را وارد کن";
+        if (!email) {
+            msg.innerText = "ایمیل را وارد کن";
             return;
         }
 
-        const { data, error } = await client.auth.signInWithPassword({
-            email: email,
-            password: pass
+        const { error } = await client.auth.resetPasswordForEmail(email, {
+            redirectTo: "https://mylivehaking.github.io/Study-Plan/reset.html"
         });
 
-        if (error) {
-            document.getElementById("msg").innerText = "ایمیل یا رمز اشتباهه";
-        } else {
-            window.location.href = "study.html";
-        }
+        if (error) msg.innerText = error.message;
+        else msg.innerText = "لینک تغییر رمز ارسال شد.";
     }
 </script>
 
