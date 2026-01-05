@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 320px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .msg {
+            margin-top: 10px;
+            color: red;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>ورود به حساب</h2>
+
+    <input id="email" type="email" placeholder="ایمیل">
+    <input id="password" type="password" placeholder="رمز عبور">
+
+    <button onclick="login()">ورود</button>
+    <button onclick="signup()" style="background:#2196F3;margin-top:8px;">ساخت حساب</button>
+
+    <div class="msg" id="msg"></div>
+</div>
+
+<script>
+    // اتصال به Supabase
+    const SUPABASE_URL = "https://ybriihvekjhzrbrnvpyq.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_tyAGKGzwzxfoiMZMjtK3ww_bey6DEcT";
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ساخت حساب
+    async function signup() {
+        const email = document.getElementById("email").value;
+        const pass = document.getElementById("password").value;
+
+        const { error } = await client.auth.signUp({
+            email: email,
+            password: pass
+        });
+
+        if (error) {
+            document.getElementById("msg").innerText = error.message;
+        } else {
+            document.getElementById("msg").innerText = "حساب ساخته شد. ایمیل را چک کن.";
+        }
+    }
+
+    // ورود
+    async function login() {
+        const email = document.getElementById("email").value;
+        const pass = document.getElementById("password").value;
+
+        const { data, error } = await client.auth.signInWithPassword({
+            email: email,
+            password: pass
+        });
+
+        if (error) {
+            document.getElementById("msg").innerText = "ایمیل یا رمز اشتباهه";
+        } else {
+            window.location.href = "study.html";
+        }
+    }
+</script>
+
+</body>
+</html>
