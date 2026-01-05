@@ -11,7 +11,7 @@
     <style>
         body {
             font-family: sans-serif;
-            background: #f5f5f5;
+            background: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -79,6 +79,11 @@
         const email = document.getElementById("email").value;
         const pass = document.getElementById("password").value;
 
+        if (!email || !pass) {
+            document.getElementById("msg").innerText = "ایمیل و رمز را وارد کن";
+            return;
+        }
+
         const { error } = await client.auth.signUp({
             email: email,
             password: pass
@@ -95,6 +100,11 @@
     async function login() {
         const email = document.getElementById("email").value;
         const pass = document.getElementById("password").value;
+
+        if (!email || !pass) {
+            document.getElementById("msg").innerText = "ایمیل و رمز را وارد کن";
+            return;
+        }
 
         const { data, error } = await client.auth.signInWithPassword({
             email: email,
