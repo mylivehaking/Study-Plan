@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>برنامه مطالعاتی</title>
-    <meta name="description" content=".وارد شوید." />
+    <title>برنامه مطالعاتی ترم چهارم</title>
+    <meta name="description" content="برنامه مطالعاتی جامع برای " />
     <meta name="theme-color" content="#111827" />
 
-    <meta property="og:title" content="برنامه مطالعاتی" />
-    <meta property="og:description" content="با این برنامه مطالعاتی بهترین نمرات را کسب کنید" />
+    <meta property="og:title" content="برنامه مطالعاتی " />
+    <meta property="og:description" content="برنامه‌ریزی درسی و مطالعاتی حرفه‌ای" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://mylivehaking.github.io/Study-Plan" />
+    <meta property="og:url" content="#" />
     <meta property="og:image" content="/cover.png" />
 
     <link rel="icon" href="/favicon.ico" />
@@ -341,6 +341,60 @@
         position: relative;
         z-index: 1;
       }
+      
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 24px;
+        margin: 32px 0;
+      }
+      
+      .feature {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 24px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      
+      .feature:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+      
+      .feature-icon {
+        font-size: 32px;
+        margin-bottom: 16px;
+      }
+      
+      .feature h3 {
+        margin: 0 0 12px 0;
+        color: var(--primary);
+      }
+      
+      .feature p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      
+      .progress-container {
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        margin: 20px 0;
+        height: 10px;
+        overflow: hidden;
+      }
+      
+      .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        width: 0%;
+        transition: width 0.5s ease;
+        border-radius: 10px;
+      }
       .login-section {
         margin-top: 40px;
         text-align: center;
@@ -438,62 +492,49 @@
       <main class="container" role="main">
         <section class="card" aria-labelledby="title">
           <div class="brand" aria-label="Brand">
-            <div class="brand-name">KaraneBala.ir</div>
+            <div class="brand-name">برنامه مطالعاتی </div>
           </div>
 
-          <h1 id="title">به‌زودی!</h1>
-          <p class="subtitle">در حال آماده‌سازی یک پروژه جدید و هیجان‌انگیز  آموزشی هستیم. منتظر ما باشید!</p>
+          <h1 id="title">برنامه مطالعاتی </h1>
+          <p class="subtitle">برنامه‌ریزی هوشمندانه، موفقیت تضمینی در امتحانات ترم چهارم</p>
 
-          <div class="countdown" aria-live="polite">
-            <div class="timebox" aria-label="روز باقی‌مانده">
-              <strong id="days">--</strong>
-              <span>روز</span>
+          <div class="features">
+            <div class="feature">
+              <div class="feature-icon">📚</div>
+              <h3>برنامه‌ریزی هفتگی</h3>
+              <p>برنامه‌ای منظم و اصولی برای تمام دروس </p>
             </div>
-            <div class="timebox" aria-label="ساعت باقی‌مانده">
-              <strong id="hours">--</strong>
-              <span>ساعت</span>
+            <div class="feature">
+              <div class="feature-icon">🎯</div>
+              <h3>اهداف هوشمند</h3>
+              <p>تعیین اهداف هفتگی و روزانه بر اساس توانایی‌های شما</p>
             </div>
-            <div class="timebox" aria-label="دقیقه باقی‌مانده">
-              <strong id="minutes">--</strong>
-              <span>دقیقه</span>
-            </div>
-            <div class="timebox" aria-label="ثانیه باقی‌مانده">
-              <strong id="seconds">--</strong>
-              <span>ثانیه</span>
+            <div class="feature">
+              <div class="feature-icon">📊</div>
+              <h3>تحلیل پیشرفت</h3>
+              <p>پیگیری و تحلیل روند پیشرفت تحصیلی شما</p>
             </div>
           </div>
-          <div class="note" id="launch-date-note">تاریخ رونمایی: <span id="launch-date-text">—</span></div>
           
           <div class="login-section">
-            <a href="/login/" class="login-btn">ورود به حساب کاربری</a>
+            <a href="#" class="login-btn">شروع برنامه‌ریزی</a>
+            <p class="note">برای دریافت برنامه‌ی اختصاصی خود ثبت‌نام کنید</p>
           </div>
 
         </section>
       </main>
       <footer>
-        © 2025 KaraneBala. همه حقوق محفوظ است.
-        <div class="note"><a href="https://www.instagram.com/alia.f55" target="_blank" rel="noopener noreferrer">طراحی توسط FOGHANI</a></div>
+        © ۱۴۰۳ برنامه مطالعاتی . همه حقوق محفوظ است.
+        <div class="note"><a href="https://www.instagram.com/alia.f55" target="_blank" rel="noopener noreferrer"></a>طراحی توسط FOGHANI</a></div>
       </footer>
     </div>
 
     <script>
-      // Disable right-click
-      document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        return false;
-      });
-
-      // Disable text selection
-      document.addEventListener('selectstart', function(e) {
-        e.preventDefault();
-        return false;
-      });
-
-      // Disable drag
-      document.addEventListener('dragstart', function(e) {
-        e.preventDefault();
-        return false;
-      });
+      // Enable right-click for better user experience
+      // document.addEventListener('contextmenu', function(e) {
+      //   e.preventDefault();
+      //   return false;
+      // });
 
       (function () {
         const LAUNCH_DATE = new Date('2025-12-09T00:00:00'); // 19 آذر 1404 (+14 روز)
@@ -538,30 +579,29 @@
        
       })();
 
-      // Particle animation
+      // Study progress calculator
       (function() {
-        const particlesContainer = document.getElementById('particles');
-        const particleCount = 50;
-
-        function createParticle() {
-          const particle = document.createElement('div');
-          particle.className = 'particle';
-          particle.style.left = Math.random() * 100 + '%';
-          particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
-          particle.style.animationDelay = Math.random() * 5 + 's';
-          particle.style.opacity = Math.random() * 0.5 + 0.2;
-          particlesContainer.appendChild(particle);
-
-          // Remove and recreate particle after animation
-          particle.addEventListener('animationend', () => {
-            particle.remove();
-            createParticle();
-          });
+        // Calculate study progress based on current date
+        const startDate = new Date('2025-01-01');
+        const endDate = new Date('2025-06-20');
+        
+        function updateProgress() {
+          const now = new Date();
+          const totalDays = (endDate - startDate) / (1000 * 60 * 60 * 24);
+          const daysPassed = (now - startDate) / (1000 * 60 * 60 * 24);
+          const progress = Math.min(100, Math.max(0, (daysPassed / totalDays) * 100)).toFixed(1);
+          
+          const progressBar = document.querySelector('.progress-bar');
+          if (progressBar) {
+            progressBar.style.width = progress + '%';
+            progressBar.setAttribute('aria-valuenow', progress);
+            document.getElementById('progress-percent').textContent = progress + '%';
+          }
         }
-
-        for (let i = 0; i < particleCount; i++) {
-          setTimeout(() => createParticle(), i * 200);
-        }
+        
+        // Update progress every hour
+        updateProgress();
+        setInterval(updateProgress, 60 * 60 * 1000);
       })();
     </script>
   </body>
