@@ -1,145 +1,486 @@
-<!DOCTYPE html>
-<html lang="fa">
+<!doctype html>
+<html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>ورود / ثبت‌نام</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ورود / ثبت‌نام - برنامه مطالعاتی هوشمند</title>
+    <meta name="description" content="ورود به پنل کاربری برنامه مطالعاتی هوشمند" />
+    <meta name="theme-color" content="#111827" />
 
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="ورود / ثبت‌نام - برنامه مطالعاتی هوشمند" />
+    <meta property="og:description" content="ورود به پنل کاربری برنامه مطالعاتی هوشمند" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="#" />
+    <meta property="og:image" content="/cover.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" />
+    
+    <!-- فونت‌های فارسی -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+        :root {
+            --bg: #0a0f1f;
+            --bg-2: #0b1226;
+            --fg: #eef2f7;
+            --muted: #9aa8bd;
+            --primary: #7c3aed;
+            --primary-600: #5b21b6;
+            --primary-light: #a78bfa;
+            --accent: #06b6d4;
+            --accent-light: #22d3ee;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --card: rgba(255,255,255,0.08);
+            --card-2: rgba(255,255,255,0.04);
+            --border: rgba(255,255,255,0.15);
+            --border-light: rgba(255,255,255,0.08);
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-600) 50%, var(--accent) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.4);
+            --shadow-md: 0 10px 30px rgba(0,0,0,0.3);
+            --shadow-sm: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #f8fafc;
+                --bg-2: #f1f5f9;
+                --fg: #0f172a;
+                --muted: #475569;
+                --primary: #6d28d9;
+                --primary-600: #5b21b6;
+                --primary-light: #8b5cf6;
+                --accent: #0891b2;
+                --accent-light: #06b6d4;
+                --card: rgba(0,0,0,0.04);
+                --card-2: rgba(0,0,0,0.02);
+                --border: rgba(0,0,0,0.15);
+                --border-light: rgba(0,0,0,0.08);
+                --shadow-lg: 0 20px 60px rgba(0,0,0,0.1);
+                --shadow-md: 0 10px 30px rgba(0,0,0,0.08);
+                --shadow-sm: 0 5px 15px rgba(0,0,0,0.05);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: sans-serif;
-            background: #f0f0f0;
+            font-family: 'Vazirmatn', ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+            color: var(--fg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            position: relative;
+            overflow-x: hidden;
+            line-height: 1.6;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            padding: 20px;
         }
-        .box {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            width: 330px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(1200px 800px at 5% -5%, rgba(124,58,237,0.35) 0%, transparent 60%),
+                radial-gradient(1000px 700px at 95% 5%, rgba(6,182,212,0.25) 0%, transparent 60%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Login Container */
+        .login-container {
+            background: linear-gradient(180deg, var(--card) 0%, var(--card-2) 100%);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .login-header {
             text-align: center;
+            margin-bottom: 32px;
         }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 12px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
+
+        .login-logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            margin-bottom: 16px;
         }
-        button {
+
+        .login-subtitle {
+            color: var(--muted);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--fg);
+        }
+
+        .form-input {
             width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            background: #4CAF50;
-            color: white;
+            padding: 14px 20px;
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: var(--fg);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 16px;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
         }
-        button:hover {
-            background: #45a049;
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
         }
-        .link {
-            margin-top: 10px;
-            color: #2196F3;
+
+        .btn-secondary {
+            background: var(--gradient-accent);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .login-link {
+            color: var(--accent-light);
+            text-decoration: none;
+            font-weight: 500;
             cursor: pointer;
-            font-size: 14px;
+            transition: color 0.2s ease;
         }
-        .msg {
-            margin-top: 10px;
-            color: red;
-            font-size: 14px;
+
+        .login-link:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .success-message {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .login-container {
+                padding: 32px 24px;
+                margin: 0 16px;
+            }
+            
+            .login-logo {
+                font-size: 2rem;
+            }
+            
+            .login-subtitle {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 
 <body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-logo">برنامه مطالعاتی هوشمند</div>
+            <div class="login-subtitle">ورود به پنل کاربری</div>
+        </div>
 
-<div class="box">
-    <h2>ورود / ثبت‌نام</h2>
+        <div class="error-message" id="error-msg"></div>
+        <div class="success-message" id="success-msg"></div>
 
-    <input id="email" type="email" placeholder="ایمیل">
+        <div class="form-group">
+            <label for="email" class="form-label">آدرس ایمیل</label>
+            <input type="email" id="email" class="form-input" placeholder="example@example.com" dir="ltr">
+        </div>
 
-    <button onclick="loginWithCode()" style="background:#9C27B0;">ورود با کد یک‌بار مصرف</button>
-    <button onclick="signup()" style="background:#2196F3;">ساخت حساب (ارسال لینک)</button>
+        <button class="btn btn-primary" onclick="loginWithCode()">
+            <i class="fas fa-sign-in-alt" style="margin-left: 8px;"></i>
+            ورود با کد یک‌بار مصرف
+        </button>
+        
+        <button class="btn btn-secondary" onclick="signup()">
+            <i class="fas fa-user-plus" style="margin-left: 8px;"></i>
+            ساخت حساب (ارسال لینک)
+        </button>
 
-    <div class="link" onclick="resetPassword()">فراموشی رمز عبور</div>
+        <div class="login-footer">
+            <span class="login-link" onclick="resetPassword()">فراموشی رمز عبور</span>
+        </div>
+    </div>
 
-    <div class="msg" id="msg"></div>
-</div>
+    <script>
+        // Initialize Supabase
+        const SUPABASE_URL = "https://ybriihvekjhzrbrnvpyq.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_tyAGKGzwzxfoiMZMjtK3ww_bey6DEcT";
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-<script>
-    const SUPABASE_URL = "https://ybriihvekjhzrbrnvpyq.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_tyAGKGzwzxfoiMZMjtK3ww_bey6DEcT";
-    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // DOM Elements
+        const emailInput = document.getElementById("email");
+        const errorMsg = document.getElementById("error-msg");
+        const successMsg = document.getElementById("success-msg");
 
-    const emailInput = document.getElementById("email");
-    const msg = document.getElementById("msg");
-
-    // ورود با کد یک‌بار مصرف (OTP / Magic Link)
-    async function loginWithCode() {
-        const email = emailInput.value;
-
-        if (!email) {
-            msg.innerText = "ایمیل را وارد کن";
-            return;
+        // Helper function to show messages
+        function showMessage(element, message) {
+            element.textContent = message;
+            element.style.display = 'block';
+            
+            // Hide the other message
+            if (element === errorMsg) {
+                successMsg.style.display = 'none';
+            } else {
+                errorMsg.style.display = 'none';
+            }
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.style.display = 'none';
+                    element.style.opacity = '1';
+                }, 300);
+            }, 5000);
         }
 
-        const { error } = await client.auth.signInWithOtp({
-            email: email,
-            options: {
-                emailRedirectTo: "https://mylivehaking.github.io/Study-Plan"
+        // ورود با کد یک‌بار مصرف (OTP / Magic Link)
+        async function loginWithCode() {
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                showMessage(errorMsg, "لطفاً آدرس ایمیل خود را وارد کنید.");
+                emailInput.focus();
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showMessage(errorMsg, "لطفاً یک آدرس ایمیل معتبر وارد کنید.");
+                emailInput.focus();
+                return;
+            }
+
+            try {
+                const { error } = await client.auth.signInWithOtp({
+                    email: email,
+                    options: {
+                        emailRedirectTo: window.location.origin + "/index.html"
+                    }
+                });
+
+                if (error) throw error;
+                
+                showMessage(successMsg, "لینک ورود به ایمیل شما ارسال شد. لطفاً صندوق ورودی خود را بررسی کنید.");
+                emailInput.value = '';
+            } catch (error) {
+                console.error('Error signing in with OTP:', error);
+                showMessage(errorMsg, error.message || "خطایی در ارسال لینک ورود رخ داد. لطفاً دوباره تلاش کنید.");
+            }
+        }
+
+        // ساخت حساب با لینک تأیید
+        async function signup() {
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                showMessage(errorMsg, "لطفاً آدرس ایمیل خود را وارد کنید.");
+                emailInput.focus();
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showMessage(errorMsg, "لطفاً یک آدرس ایمیل معتبر وارد کنید.");
+                emailInput.focus();
+                return;
+            }
+
+            try {
+                const { error } = await client.auth.signUp({
+                    email: email,
+                    password: crypto.randomUUID(),
+                    options: {
+                        emailRedirectTo: window.location.origin + "/index.html"
+                    }
+                });
+
+                if (error) throw error;
+                
+                showMessage(successMsg, "لینک تأیید به ایمیل شما ارسال شد. لطفاً صندوق ورودی خود را بررسی کنید.");
+                emailInput.value = '';
+            } catch (error) {
+                console.error('Error signing up:', error);
+                showMessage(errorMsg, error.message || "خطایی در ثبت‌نام رخ داد. لطفاً دوباره تلاش کنید.");
+            }
+        }
+
+        // فراموشی رمز
+        async function resetPassword() {
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                showMessage(errorMsg, "لطفاً آدرس ایمیل حساب خود را وارد کنید.");
+                emailInput.focus();
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showMessage(errorMsg, "لطفاً یک آدرس ایمیل معتبر وارد کنید.");
+                emailInput.focus();
+                return;
+            }
+
+            try {
+                const { error } = await client.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + "/reset-password.html"
+                });
+
+                if (error) throw error;
+                
+                showMessage(successMsg, "لینک تغییر رمز عبور به ایمیل شما ارسال شد.");
+                emailInput.value = '';
+            } catch (error) {
+                console.error('Error resetting password:', error);
+                showMessage(errorMsg, error.message || "خطایی در ارسال لینک تغییر رمز عبور رخ داد. لطفاً دوباره تلاش کنید.");
+            }
+        }
+
+        // Email validation helper
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        // Handle Enter key press
+        emailInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginWithCode();
             }
         });
 
-        if (error) msg.innerText = error.message;
-        else msg.innerText = "کد ورود به ایمیل ارسال شد.";
-    }
-
-    // ساخت حساب با لینک تأیید
-    async function signup() {
-        const email = emailInput.value;
-
-        if (!email) {
-            msg.innerText = "ایمیل را وارد کن";
-            return;
+        // Check for authentication callback
+        async function handleAuthCallback() {
+            const { data, error } = await client.auth.getSession();
+            
+            if (data?.session) {
+                // User is signed in, redirect to dashboard
+                window.location.href = 'index.html';
+            }
         }
 
-        const { error } = await client.auth.signUp({
-            email: email,
-            password: crypto.randomUUID(), // رمز تصادفی چون ورود با رمز نمی‌خوای
-            options: {
-                emailRedirectTo: "https://mylivehaking.github.io/Study-Plan"
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if this is a callback from email verification
+            if (window.location.hash) {
+                handleAuthCallback();
             }
         });
-
-        if (error) msg.innerText = error.message;
-        else msg.innerText = "لینک تأیید به ایمیل ارسال شد.";
-    }
-
-    // فراموشی رمز
-    async function resetPassword() {
-        const email = emailInput.value;
-
-        if (!email) {
-            msg.innerText = "ایمیل را وارد کن";
-            return;
-        }
-
-        const { error } = await client.auth.resetPasswordForEmail(email, {
-            redirectTo: "https://mylivehaking.github.io/Study-Plan/reset.html"
-        });
-
-        if (error) msg.innerText = error.message;
-        else msg.innerText = "لینک تغییر رمز ارسال شد.";
-    }
-</script>
-
+    </script>
 </body>
 </html>
