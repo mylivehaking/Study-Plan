@@ -77,8 +77,7 @@ class DataManager {
     }
 
     getTodaySchedule() {
-        // برای تست: یکشنبه (روز 0)
-        const dayIndex = 0; 
+        const dayIndex = new Date().getDay();
         const dayKey = DAYS_FA[dayIndex];
         return this.data[dayKey] || [];
     }

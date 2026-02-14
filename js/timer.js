@@ -56,9 +56,7 @@ class Timer {
     }
 
     static getSecondsBetween(startTimeStr, endTimeStr) {
-        // برای تست: ساعت 13:00 روز جاری
         const now = new Date();
-        now.setHours(13, 0, 0, 0);
         
         const [endH, endM] = endTimeStr.split(':').map(Number);
         

@@ -1,11 +1,24 @@
 let currentActiveBlock = null;
 let appTimer = null;
 
+function applyTheme(theme) {
+    const t = theme === 'dark' ? 'dark' : 'light';
+    document.body.classList.toggle('dark', t === 'dark');
+    document.documentElement.classList.toggle('dark', t === 'dark');
+    try {
+        localStorage.setItem('theme', t);
+    } catch (e) {
+        // ignore
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // اعمال تم ذخیره شده به محض لود شدن هر صفحه
     const savedTheme = localStorage.getItem('theme') || 'light';
     if (savedTheme === 'dark') {
-        document.body.classList.add('dark');
+        applyTheme('dark');
+    } else {
+        applyTheme('light');
     }
     
     initApp();
@@ -13,13 +26,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initApp() {
     const path = window.location.pathname;
-    
-    if (path.includes('index.html') || path === '/') {
-        setupTodayPage();
-    } else if (path.includes('weekly.html')) {
-        renderWeeklyPage();
-    } else if (path.includes('settings.html')) {
+
+    // روی هاست ممکنه آدرس فایل html در URL نیاد (مثلاً /settings یا /weekly)
+    // پس علاوه بر path، با وجود المنت‌های صفحه هم تشخیص می‌دیم.
+    const hasSettings = document.getElementById('theme-toggle') || document.getElementById('notif-toggle');
+    const hasWeekly = document.getElementById('weekly-grid');
+    const hasToday = document.getElementById('blocks-list') || document.getElementById('current-block');
+
+    if (hasSettings || path.includes('settings')) {
         setupSettingsPage();
+        return;
+    }
+
+    if (hasWeekly || path.includes('weekly')) {
+        renderWeeklyPage();
+        return;
+    }
+
+    if (hasToday || path === '/' || path.endsWith('/index.html') || path.includes('index')) {
+        setupTodayPage();
+        return;
     }
 }
 
@@ -77,8 +103,8 @@ function setupTodayPage() {
 }
 
 function findAndDisplayCurrentBlock(schedule) {
-    // برای تست: ساعت 13:00
-    const currentTime = 13 * 60 + 0; 
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
 
     currentActiveBlock = schedule.find(block => {
         const [startH, startM] = block.start.split(':').map(Number);
@@ -124,7 +150,7 @@ function resumeTimerForBlock(block, endTime) {
 }
 
 function markBlockAsDone(blockId) {
-    const dayIndex = 0; // حالت تست
+    const dayIndex = new Date().getDay();
     const dayKey = DAYS_FA[dayIndex];
     
     dataManager.markAsDone(dayKey, blockId);
@@ -174,18 +200,18 @@ function setupSettingsPage() {
 
     const savedTheme = localStorage.getItem('theme') || 'light';
     if (savedTheme === 'dark') {
-        document.body.classList.add('dark');
+        applyTheme('dark');
         if (themeToggle) themeToggle.checked = true;
+    } else {
+        applyTheme('light');
     }
     
     if (themeToggle) {
         themeToggle.addEventListener('change', (e) => {
             if (e.target.checked) {
-                document.body.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
+                applyTheme('dark');
             } else {
-                document.body.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
+                applyTheme('light');
             }
         });
     }

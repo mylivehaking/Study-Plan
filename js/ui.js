@@ -5,21 +5,17 @@ function renderTodayPage(todaySchedule) {
     
     if (!blocksList) return;
 
-    // برای تست: یکشنبه (روز 0)
-    const dayIndex = 0;
+    const dayIndex = new Date().getDay();
     const dayKey = DAYS_FA[dayIndex];
     dayNameEl.textContent = DAYS_NAMES_FA[dayKey];
     
-    // تاریخ تست
-    const testDate = new Date();
-    testDate.setDate(testDate.getDate() + (0 - testDate.getDay())); // تنظیم به نزدیک‌ترین یکشنبه
-    
+    // تاریخ شمسی
     dateEl.textContent = new Intl.DateTimeFormat('fa-IR', { 
         weekday: 'long', 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric' 
-    }).format(testDate);
+    }).format(new Date());
 
     blocksList.innerHTML = '';
     let doneCount = 0;
@@ -47,8 +43,8 @@ function renderTodayPage(todaySchedule) {
                 const [startH, startM] = block.start.split(':').map(Number);
                 const startTime = startH * 60 + startM;
                 
-                // زمان فعلی برای تست (ساعت 13:00)
-                const currentTime = 13 * 60 + 0; 
+                const now = new Date();
+                const currentTime = now.getHours() * 60 + now.getMinutes();
 
                 if (currentTime >= startTime) {
                     if (confirm(`آیا بازه "${block.title}" انجام شده است؟`)) {
