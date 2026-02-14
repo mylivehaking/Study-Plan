@@ -12,6 +12,13 @@
   const banner = document.getElementById('install-banner');
   const installBtn = document.getElementById('install-btn');
 
+  const isStandalone = () => {
+    // iOS
+    if ('standalone' in navigator && navigator.standalone) return true;
+    // Modern browsers
+    return !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+  };
+
   function showBanner() {
     if (!banner) return;
     banner.hidden = false;
@@ -20,6 +27,12 @@
   function hideBanner() {
     if (!banner) return;
     banner.hidden = true;
+  }
+
+  // اگر اپ نصب شده و در حالت standalone اجرا شده، بنر نصب را نشان نده
+  if (isStandalone()) {
+    hideBanner();
+    return;
   }
 
   window.addEventListener('beforeinstallprompt', (e) => {
@@ -48,8 +61,7 @@
 
   // iOS Safari: beforeinstallprompt وجود ندارد
   const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isInStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
-  if (isIos && !isInStandalone && banner && installBtn) {
+  if (isIos && !isStandalone() && banner && installBtn) {
     banner.querySelector('.install-banner__text').textContent = 'برای نصب: Share → Add to Home Screen';
     installBtn.hidden = true;
     showBanner();
