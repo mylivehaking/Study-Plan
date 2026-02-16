@@ -94,21 +94,31 @@ class DataManager {
             const response = await fetch('/api/data');
             if (response.ok) {
                 const serverData = await response.json();
+                
+                // اگر دیتای سرور وجود داشت، جایگزین دیتای محلی شود
                 if (serverData && Object.keys(serverData).length > 0) {
                     this.data = serverData;
                     localStorage.setItem('today_plan_data', JSON.stringify(this.data));
-                    // رفرش کردن UI اگر در صفحه اصلی یا هفتگی هستیم
-                    if (typeof renderTodayPage === 'function') {
-                        const todaySchedule = this.getTodaySchedule();
-                        renderTodayPage(todaySchedule);
-                    }
-                    if (typeof renderWeeklyPage === 'function') {
-                        renderWeeklyPage();
-                    }
+                } else {
+                    // اگر سرور خالی بود (اولین بار)، دیتای فعلی را آپلود کن
+                    await this.saveData();
                 }
+
+                // رفرش کردن UI
+                this.refreshUI();
             }
         } catch (e) {
             console.warn('Could not sync from server, using local data.');
+        }
+    }
+
+    refreshUI() {
+        if (typeof renderTodayPage === 'function') {
+            const todaySchedule = this.getTodaySchedule();
+            renderTodayPage(todaySchedule);
+        }
+        if (typeof renderWeeklyPage === 'function') {
+            renderWeeklyPage();
         }
     }
 
