@@ -65,6 +65,7 @@ const DAYS_NAMES_FA = {
 class DataManager {
     constructor() {
         this.data = this.loadData();
+        this.syncWithServer(); // تلاش برای همگام‌سازی هنگام لود
     }
 
     loadData() {
@@ -72,8 +73,43 @@ class DataManager {
         return saved ? JSON.parse(saved) : DEFAULT_DATA;
     }
 
-    saveData() {
+    async saveData() {
         localStorage.setItem('today_plan_data', JSON.stringify(this.data));
+        
+        // تلاش برای ذخیره در Netlify Blobs
+        try {
+            await fetch('/api/data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.data)
+            });
+            console.log('Data synced to Netlify Blobs');
+        } catch (e) {
+            console.error('Failed to sync with Netlify:', e);
+        }
+    }
+
+    async syncWithServer() {
+        try {
+            const response = await fetch('/api/data');
+            if (response.ok) {
+                const serverData = await response.json();
+                if (serverData && Object.keys(serverData).length > 0) {
+                    this.data = serverData;
+                    localStorage.setItem('today_plan_data', JSON.stringify(this.data));
+                    // رفرش کردن UI اگر در صفحه اصلی یا هفتگی هستیم
+                    if (typeof renderTodayPage === 'function') {
+                        const todaySchedule = this.getTodaySchedule();
+                        renderTodayPage(todaySchedule);
+                    }
+                    if (typeof renderWeeklyPage === 'function') {
+                        renderWeeklyPage();
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Could not sync from server, using local data.');
+        }
     }
 
     getTodaySchedule() {
