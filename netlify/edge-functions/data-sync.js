@@ -1,19 +1,12 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from '@netlify/neon';
 
 export default async (req, context) => {
   const method = req.method;
-  const dbUrl = Deno.env.get("DATABASE_URL");
   
-  if (!dbUrl) {
-    return new Response(JSON.stringify({ error: "DATABASE_URL not set" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  // دیتابیس نتلیفای به طور خودکار از NETLIFY_DATABASE_URL استفاده می‌کند
+  const sql = neon();
 
-  const sql = neon(dbUrl);
-
-  // ایجاد جدول اگر وجود نداشته باشد (برای شروع سریع)
+  // ایجاد جدول اگر وجود نداشته باشد
   try {
     await sql`
       CREATE TABLE IF NOT EXISTS app_data (
