@@ -2,7 +2,8 @@ const { createClient } = require('@supabase/supabase-js');
 
 export default async (req, res) => {
   const method = req.method;
-  const supabaseUrl = process.env.SUPABASE_URL;
+  const dbUrl = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.SUPABASE_URL;
+  const supabaseUrl = process.env.SUPABASE_URL || dbUrl;
   const supabaseKey = process.env.SUPABASE_KEY;
   const apiKey = req.headers['x-api-key'];
   const EXPECTED_API_KEY = process.env.APP_API_KEY || 'today-plan-secret-key';
@@ -18,6 +19,8 @@ export default async (req, res) => {
 
   if (!supabaseUrl || !supabaseKey) {
     console.error("[Function] Supabase credentials missing");
+    console.error("[Function] SUPABASE_URL:", supabaseUrl ? "present" : "missing");
+    console.error("[Function] SUPABASE_KEY:", supabaseKey ? "present" : "missing");
     return res.status(500).json({ error: "Supabase credentials missing" });
   }
 
