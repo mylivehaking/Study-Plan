@@ -81,7 +81,7 @@ class DataManager {
         localStorage.setItem('today_plan_data', JSON.stringify(this.data));
         
         try {
-            const response = await fetch('/api/data', {
+            const response = await fetch('/.netlify/functions/data-sync', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(this.data)
@@ -101,7 +101,7 @@ class DataManager {
         console.log('=== Starting server sync ===');
         try {
             // اضافه کردن یک پارامتر رندوم برای جلوگیری از کش مرورگر
-            const response = await fetch(`/api/data?t=${Date.now()}`);
+            const response = await fetch(`/.netlify/functions/data-sync?t=${Date.now()}`);
             console.log('Response status:', response.status);
             console.log('Response ok:', response.ok);
             
