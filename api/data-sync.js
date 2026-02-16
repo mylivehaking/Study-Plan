@@ -45,7 +45,16 @@ export default async (req, res) => {
     }
 
     if (method === "POST") {
-      const body = req.body;
+      let body = req.body;
+      // اگر body رشته بود، parse کن (Vercel ممکنه body رو parse نکرده باشه)
+      if (typeof body === 'string') {
+        try {
+          body = JSON.parse(body);
+        } catch (e) {
+          return res.status(400).json({ error: "Invalid JSON body" });
+        }
+      }
+      
       await sql`
         INSERT INTO app_data (id, content, updated_at)
         VALUES (${DATA_ID}, ${JSON.stringify(body)}::jsonb, CURRENT_TIMESTAMP)
