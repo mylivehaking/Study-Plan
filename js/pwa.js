@@ -9,31 +9,34 @@
     });
   });
 
+  const installOverlay = document.getElementById('install-overlay');
   const installBtn = document.getElementById('install-btn');
   const iosInfo = document.getElementById('ios-info');
+  const closeBtn = document.getElementById('close-install');
 
   const isStandalone = () => {
-    // iOS
     if ('standalone' in navigator && navigator.standalone) return true;
-    // Modern browsers
     return !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
   };
 
-  // اگر اپ نصب شده است، ریدایرکت به ایندکس
-  if (isStandalone() && window.location.pathname.includes('install.html')) {
-    window.location.href = 'index.html';
+  // اگر نصب شده است، کلاً نمایش نده
+  if (isStandalone()) {
+    if (installOverlay) installOverlay.style.display = 'none';
     return;
   }
 
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    if (installBtn) installBtn.style.display = 'block';
+    // نمایش اورلی فقط اگر قبلاً در این سشن بسته نشده باشد
+    if (installOverlay && sessionStorage.getItem('install_dismissed') !== 'true') {
+      installOverlay.style.display = 'flex';
+    }
   });
 
   window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
-    window.location.href = 'index.html';
+    if (installOverlay) installOverlay.style.display = 'none';
   });
 
   if (installBtn) {
@@ -43,14 +46,25 @@
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
         deferredPrompt = null;
+        if (installOverlay) installOverlay.style.display = 'none';
       }
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      if (installOverlay) installOverlay.style.display = 'none';
+      sessionStorage.setItem('install_dismissed', 'true');
     });
   }
 
   // iOS Safari
   const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
   if (isIos && !isStandalone() && iosInfo) {
-    iosInfo.style.display = 'block';
-    if (installBtn) installBtn.style.display = 'none';
+    if (installOverlay && sessionStorage.getItem('install_dismissed') !== 'true') {
+        installOverlay.style.display = 'flex';
+        iosInfo.style.display = 'block';
+        if (installBtn) installBtn.style.display = 'none';
+    }
   }
 })();

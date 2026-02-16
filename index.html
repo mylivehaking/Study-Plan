@@ -16,6 +16,20 @@
         </header>
 
         <main id="app-content">
+            <!-- Install Overlay (Visible only if not installed) -->
+            <section id="install-overlay" class="install-overlay" style="display: none;">
+                <div class="install-card card">
+                    <img src="assets/icons/icon.svg" alt="Today Plan Logo" class="app-logo-small">
+                    <h3>نصب Today Plan</h3>
+                    <p>برای دسترسی سریع‌تر و استفاده آفلاین، اپلیکیشن را نصب کنید.</p>
+                    <button id="install-btn" class="btn primary">نصب اپلیکیشن</button>
+                    <div id="ios-info" class="ios-instruction-small" style="display: none;">
+                        برای نصب: <span style="font-weight:bold">Share</span> ← <span style="font-weight:bold">Add to Home Screen</span>
+                    </div>
+                    <button id="close-install" class="btn-text">بعداً</button>
+                </div>
+            </section>
+
             <!-- Current Block Section -->
             <section id="current-block" class="card active-block">
                 <h2 id="block-title">در حال بارگذاری...</h2>

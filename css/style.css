@@ -403,7 +403,77 @@ input:checked + .slider:before {
     transform: translateX(26px);
 }
 
-/* Animations */
+/* Install Overlay */
+.install-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.install-card {
+    max-width: 350px;
+    width: 100%;
+    text-align: center;
+    padding: 30px;
+    animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.app-logo-small {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+}
+
+.install-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+}
+
+.install-card p {
+    color: var(--secondary-color);
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+}
+
+.ios-instruction-small {
+    margin: 15px 0;
+    padding: 12px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 10px;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    font-weight: 600;
+    margin-top: 15px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
 @keyframes fadeInDown {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
