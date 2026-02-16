@@ -46,14 +46,33 @@ export default async (req, res) => {
 
     if (method === "POST") {
       let body = req.body;
-      // اگر body رشته بود، parse کن (Vercel ممکنه body رو parse نکرده باشه)
-      if (typeof body === 'string') {
+      
+      // اگر body وجود نداشت یا Buffer بود
+      if (!body || Buffer.isBuffer(body)) {
+        try {
+          const rawBody = body ? body.toString() : '{}';
+          body = JSON.parse(rawBody);
+        } catch (e) {
+          console.error("[Function] Failed to parse body:", e);
+          return res.status(400).json({ error: "Invalid JSON in body" });
+        }
+      }
+      // اگر body رشته بود
+      else if (typeof body === 'string') {
         try {
           body = JSON.parse(body);
         } catch (e) {
-          return res.status(400).json({ error: "Invalid JSON body" });
+          console.error("[Function] Failed to parse string body:", e);
+          return res.status(400).json({ error: "Invalid JSON string in body" });
         }
       }
+      
+      // اگر body هنوز null/undefined است
+      if (!body || typeof body !== 'object') {
+        return res.status(400).json({ error: "Body must be an object" });
+      }
+      
+      console.log("[Function] Body parsed successfully, keys:", Object.keys(body));
       
       await sql`
         INSERT INTO app_data (id, content, updated_at)
