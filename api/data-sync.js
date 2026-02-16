@@ -2,27 +2,38 @@ const { createClient } = require('@supabase/supabase-js');
 
 module.exports = async (req, res) => {
   const method = req.method;
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+  const supabaseUrl =
+    process.env.SUPABASE_URL ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    process.env.VITE_SUPABASE_URL ||
+    process.env.DATABASE_URL;
+
+  const supabaseKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_ANON_KEY;
+
   const apiKey = req.headers['x-api-key'];
   const EXPECTED_API_KEY = process.env.APP_API_KEY;
 
   console.log(`[Function] Method: ${method} - Path: ${req.url}`);
-  console.log(`[Function] Header API Key: ${apiKey}`);
+  console.log(`[Function] Header API Key present: ${!!apiKey}`);
 
   if (EXPECTED_API_KEY && apiKey !== EXPECTED_API_KEY) {
     console.error(`[Function] Unauthorized: Received "${apiKey}", Expected "${EXPECTED_API_KEY}"`);
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  if (!supabaseUrl) {
-    console.error("[Function] Supabase URL missing");
-    return res.status(500).json({ error: "Supabase URL missing" });
-  }
-
-  if (!supabaseKey) {
-    console.error("[Function] Supabase key missing");
-    return res.status(500).json({ error: "Supabase key missing" });
+  const missing = [];
+  if (!supabaseUrl) missing.push('SUPABASE_URL');
+  if (!supabaseKey) missing.push('SUPABASE_ANON_KEY (or SUPABASE_SERVICE_ROLE_KEY)');
+  if (missing.length) {
+    console.error(`[Function] Missing env: ${missing.join(', ')}`);
+    return res.status(500).json({
+      error: 'Missing required server environment variables',
+      missing
+    });
   }
 
   console.log(`[Function] Supabase URL present: ${!!supabaseUrl}`);
