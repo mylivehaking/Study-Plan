@@ -3,7 +3,7 @@ const { createClient } = require('@supabase/supabase-js');
 export default async (req, res) => {
   const method = req.method;
   const dbUrl = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || process.env.POSTGRES_URL || process.env.SUPABASE_URL;
-  const supabaseUrl = process.env.SUPABASE_URL || dbUrl;
+  const supabaseUrl = dbUrl; // مستقیماً از DATABASE_URL استفاده می‌کنیم
   const apiKey = req.headers['x-api-key'];
   const EXPECTED_API_KEY = process.env.APP_API_KEY || 'today-plan-secret-key';
 
