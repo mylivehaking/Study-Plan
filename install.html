@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نصب Today Plan</title>
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .install-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        .app-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 24px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+        .install-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .install-desc {
+            color: var(--secondary-color);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        #install-btn {
+            width: 100%;
+            max-width: 300px;
+            padding: 16px;
+            font-size: 1.1rem;
+        }
+        .ios-instruction {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e0f2fe;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="install-container">
+        <img src="assets/icons/icon.svg" alt="Today Plan Logo" class="app-logo">
+        <h1 class="install-title">خوش آمدید به Today Plan</h1>
+        <p class="install-desc">برای استفاده از تمامی امکانات و دسترسی سریع‌تر، اپلیکیشن را روی گوشی یا کامپیوتر خود نصب کنید.</p>
+        
+        <button id="install-btn" class="btn primary">نصب اپلیکیشن</button>
+        
+        <div id="ios-info" class="ios-instruction">
+            برای نصب در آیفون: دکمه <span style="font-weight:bold">Share</span> را بزنید و سپس <span style="font-weight:bold">Add to Home Screen</span> را انتخاب کنید.
+        </div>
+    </div>
+
+    <script src="js/pwa.js"></script>
+    <script>
+        // چک کردن اینکه آیا از قبل نصب شده یا خیر
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

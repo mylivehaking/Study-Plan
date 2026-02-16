@@ -4,7 +4,7 @@
   "description": "برنامه‌ریزی روزانه و هفتگی با تایمر و پیگیری پیشرفت",
   "lang": "fa",
   "dir": "rtl",
-  "start_url": "./index.html",
+  "start_url": "./install.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f8fafc",

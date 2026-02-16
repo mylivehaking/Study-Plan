@@ -3,6 +3,7 @@ const CACHE_NAME = 'today-plan-v1';
 const APP_SHELL = [
   './',
   './index.html',
+  './install.html',
   './weekly.html',
   './settings.html',
   './css/style.css',
