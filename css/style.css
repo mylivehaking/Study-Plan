@@ -454,6 +454,11 @@ input:checked + .slider:before {
     color: var(--primary-color);
 }
 
+.install-card .btn {
+    width: 100%;
+    justify-content: center;
+}
+
 .btn-text {
     background: none;
     border: none;
