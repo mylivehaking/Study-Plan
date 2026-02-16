@@ -1,1 +1,1 @@
-{"name":"today-plan","version":"1.0.0","description":"برنامه‌ریزی روزانه و هفتگی با تایمر و پیگیری پیشرفت","main":"index.html","scripts":{"build":"echo 'No build step required'"},"dependencies":{"@neondatabase/serverless":"^0.9.4"}}
+{"name":"today-plan","version":"1.0.0","description":"برنامه‌ریزی روزانه و هفتگی با تایمر و پیگیری پیشرفت","main":"index.html","scripts":{"build":"echo 'No build step required'"},"dependencies":{"@supabase/supabase-js":"^2.39.0"}}
