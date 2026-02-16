@@ -1,6 +1,6 @@
 const { neon } = require('@neondatabase/serverless');
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   const method = req.method;
   const dbUrl = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
 

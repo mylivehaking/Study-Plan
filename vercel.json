@@ -9,6 +9,11 @@
       }
     }
   ],
+  "functions": {
+    "api/data-sync.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "routes": [
     {
       "src": "/(.*)",
