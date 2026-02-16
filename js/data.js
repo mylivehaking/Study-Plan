@@ -65,25 +65,28 @@ const DAYS_NAMES_FA = {
 class DataManager {
     constructor() {
         this.data = this.loadData();
-        this.syncWithServer(); // تلاش برای همگام‌سازی هنگام لود
+        // ابتدا دیتا را از سرور می‌گیریم و بعد UI را رندر می‌کنیم
+        this.syncWithServer().then(() => {
+            console.log('Initial sync completed');
+        });
     }
 
     loadData() {
         const saved = localStorage.getItem('today_plan_data');
-        return saved ? JSON.parse(saved) : DEFAULT_DATA;
+        return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_DATA));
     }
 
     async saveData() {
         localStorage.setItem('today_plan_data', JSON.stringify(this.data));
         
-        // تلاش برای ذخیره در Netlify Blobs
         try {
-            await fetch('/api/data', {
+            const response = await fetch('/api/data', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(this.data)
             });
-            console.log('Data synced to Netlify Blobs');
+            if (!response.ok) throw new Error('Network response was not ok');
+            console.log('Data synced to Netlify DB');
         } catch (e) {
             console.error('Failed to sync with Netlify:', e);
         }
@@ -95,30 +98,40 @@ class DataManager {
             if (response.ok) {
                 const serverData = await response.json();
                 
-                // اگر دیتای سرور وجود داشت، جایگزین دیتای محلی شود
-                if (serverData && Object.keys(serverData).length > 0) {
+                // اگر دیتای سرور وجود داشت و خالی نبود، جایگزین دیتای محلی شود
+                if (serverData && Object.keys(serverData).length > 0 && 
+                    (serverData.saturday || serverData.sunday)) { // چک کردن فیلدهای اصلی
                     this.data = serverData;
                     localStorage.setItem('today_plan_data', JSON.stringify(this.data));
+                    console.log('Data restored from Netlify DB');
                 } else {
-                    // اگر سرور خالی بود (اولین بار)، دیتای فعلی را آپلود کن
+                    // اگر سرور خالی بود، دیتای فعلی (محلی) را بفرست بالا
+                    console.log('Server is empty, uploading local data...');
                     await this.saveData();
                 }
 
-                // رفرش کردن UI
+                // در هر صورت UI را با آخرین دیتا آپدیت کن
                 this.refreshUI();
             }
         } catch (e) {
-            console.warn('Could not sync from server, using local data.');
+            console.warn('Could not sync from server, using local data:', e);
         }
     }
 
     refreshUI() {
+        // این تابع باید توسط app.js یا ui.js بعد از لود کامل صدا زده شود
+        // یا مستقیم اینجا رندر را انجام دهد
         if (typeof renderTodayPage === 'function') {
             const todaySchedule = this.getTodaySchedule();
             renderTodayPage(todaySchedule);
         }
         if (typeof renderWeeklyPage === 'function') {
             renderWeeklyPage();
+        }
+        // اگر در صفحه ایندکس هستیم، بلاک جاری را هم پیدا کن
+        if (typeof findAndDisplayCurrentBlock === 'function') {
+            const todaySchedule = this.getTodaySchedule();
+            findAndDisplayCurrentBlock(todaySchedule);
         }
     }
 
