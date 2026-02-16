@@ -25,7 +25,7 @@ function renderTodayPage(todaySchedule) {
         
         const card = document.createElement('div');
         card.className = `small-card ${block.type || ''} ${block.done ? 'done' : ''}`;
-        card.style.cursor = 'pointer'; // نشان دادن قابلیت کلیک
+        card.style.cursor = 'pointer'; 
         card.innerHTML = `
             <div class="block-info">
                 <div class="title">${block.title}</div>
@@ -82,10 +82,15 @@ function renderWeeklyPage() {
     const dayCard = document.createElement('div');
     dayCard.className = `day-column ${dayKey}`;
     
-    let blocksHtml = dayBlocks.map(b => `
-        <div class="small-card ${b.type || ''}" style="margin-top: 8px; padding: 10px; box-shadow: none; border-width: 2px;">
-            <div style="font-weight: bold; font-size: 0.9rem;">${b.title}</div>
-            <div style="font-size: 0.75rem; color: var(--secondary-color);">${b.start} تا ${b.end}</div>
+        let blocksHtml = dayBlocks.map(b => `
+        <div class="small-card ${b.type || ''} ${b.done ? 'done' : ''}">
+            <div class="block-info">
+                <div class="title">${b.title}</div>
+                <div class="time">${b.start} تا ${b.end}</div>
+            </div>
+            <div class="status">
+                ${b.done ? '<span>✅</span>' : '<span>⏳</span>'}
+            </div>
         </div>
     `).join('');
 
@@ -109,6 +114,12 @@ function updateCurrentBlockUI(block) {
     const timeEl = document.getElementById('block-time');
     const startStopBtn = document.getElementById('start-stop-btn');
     const markDoneBtn = document.getElementById('mark-done-btn');
+    const currentBlockSection = document.getElementById('current-block');
+    
+    if (currentBlockSection) {
+        currentBlockSection.style.textAlign = 'right';
+        currentBlockSection.style.direction = 'rtl';
+    }
     
     if (block) {
         titleEl.textContent = block.title;
