@@ -167,9 +167,31 @@ class DataManager {
         }
     }
 
-    resetData() {
-        this.data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        this.saveData();
+    async resetData() {
+        const freshData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+
+        try {
+            console.log('Reset: sending default data to server...');
+            const response = await fetch('/api/data-sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(freshData)
+            });
+
+            console.log('Reset server response status:', response.status);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Reset server error: ${errorText}`);
+            }
+            console.log('Reset data synced to Neon DB');
+        } catch (e) {
+            console.error('Reset: failed to sync with server, continuing with local reset only:', e);
+        }
+
+        // بعد از تلاش برای آپدیت سرور، حتماً لوکال را هم ریست کن
+        this.data = freshData;
+        localStorage.setItem('today_plan_data', JSON.stringify(this.data));
+        this.refreshUI();
     }
 }
 
