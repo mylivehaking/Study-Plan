@@ -1,6 +1,0 @@
-[[edge_functions]]
-  path = "/api/data"
-  function = "data-sync"
-
-[build]
-  publish = "."
