@@ -77,6 +77,7 @@ class DataManager {
     }
 
     async saveData() {
+        console.log('Attempting to save data to server...');
         localStorage.setItem('today_plan_data', JSON.stringify(this.data));
         
         try {
@@ -85,7 +86,11 @@ class DataManager {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(this.data)
             });
-            if (!response.ok) throw new Error('Network response was not ok');
+            console.log('Server response status:', response.status);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server error: ${errorText}`);
+            }
             console.log('Data synced to Netlify DB');
         } catch (e) {
             console.error('Failed to sync with Netlify:', e);
@@ -93,11 +98,16 @@ class DataManager {
     }
 
     async syncWithServer() {
-        console.log('Fetching data from server...');
+        console.log('=== Starting server sync ===');
         try {
             // اضافه کردن یک پارامتر رندوم برای جلوگیری از کش مرورگر
             const response = await fetch(`/api/data?t=${Date.now()}`);
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+            
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Server error response:', errorText);
                 throw new Error(`Server responded with ${response.status}`);
             }
             
@@ -129,6 +139,7 @@ class DataManager {
         } catch (e) {
             console.error('Sync failed:', e);
         }
+        console.log('=== Server sync completed ===');
     }
 
     refreshUI() {
