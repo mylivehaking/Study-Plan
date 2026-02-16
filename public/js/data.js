@@ -81,59 +81,84 @@ class DataManager {
 
     async saveData() {
         console.log('Attempting to save data to server...');
+        this.data.updated_at = Date.now();
         localStorage.setItem('today_plan_data', JSON.stringify(this.data));
 
-        try {
-            const response = await fetch('/api/data-sync', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(this.data)
-            });
-            console.log('Server response status:', response.status);
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Server error: ${errorText}`);
+        this.updateSyncStatus('syncing');
+
+        // Debouncing logic
+        if (this.syncTimeout) clearTimeout(this.syncTimeout);
+        
+        this.syncTimeout = setTimeout(async () => {
+            try {
+                const response = await fetch('/api/data-sync', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-api-key': 'today-plan-secret-key' 
+                    },
+                    body: JSON.stringify(this.data)
+                });
+                if (!response.ok) throw new Error('Server error');
+                console.log('Data synced to Neon DB');
+                this.updateSyncStatus('synced');
+            } catch (e) {
+                console.error('Failed to sync with server:', e);
+                this.updateSyncStatus('offline');
             }
-            console.log('Data synced to Neon DB');
-        } catch (e) {
-            console.error('Failed to sync with server:', e);
-        }
+        }, 1000);
+    }
+
+    updateSyncStatus(status) {
+        const statusEl = document.getElementById('sync-status');
+        if (!statusEl) return;
+
+        const icons = {
+            'syncing': '🔄',
+            'synced': '☁️',
+            'offline': '⚠️'
+        };
+        const titles = {
+            'syncing': 'در حال ذخیره‌سازی...',
+            'synced': 'ذخیره شده در ابر',
+            'offline': 'آفلاین (ذخیره محلی)'
+        };
+
+        statusEl.textContent = icons[status] || '';
+        statusEl.title = titles[status] || '';
+        statusEl.className = `sync-status ${status}`;
     }
 
     async syncWithServer() {
         console.log('=== Starting server sync ===');
+        this.updateSyncStatus('syncing');
         try {
-            const response = await fetch(`/api/data-sync?t=${Date.now()}`);
-            console.log('Response status:', response.status);
-            console.log('Response ok:', response.ok);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Server error response:', errorText);
-                throw new Error(`Server responded with ${response.status}`);
-            }
+            const response = await fetch(`/api/data-sync?t=${Date.now()}`, {
+                headers: { 'x-api-key': 'today-plan-secret-key' }
+            });
+            
+            if (!response.ok) throw new Error('Sync failed');
 
             const serverData = await response.json();
-            console.log('Data received from server:', serverData);
-
-            const hasAnyDone = serverData && Object.values(serverData).some(day =>
-                Array.isArray(day) && day.some(block => block.done === true)
-            );
-
-            if (hasAnyDone) {
-                console.log('Valid progress found on server, updating local state...');
-                this.data = serverData;
-                localStorage.setItem('today_plan_data', JSON.stringify(this.data));
-            } else {
-                console.log('No progress found on server. Keeping local data.');
+            
+            if (serverData && serverData.updated_at) {
+                const localUpdatedAt = this.data.updated_at || 0;
+                if (serverData.updated_at > localUpdatedAt) {
+                    console.log('Server data is newer, updating local...');
+                    this.data = serverData;
+                    localStorage.setItem('today_plan_data', JSON.stringify(this.data));
+                } else if (localUpdatedAt > serverData.updated_at) {
+                    console.log('Local data is newer, uploading...');
+                    await this.saveData();
+                }
             }
-
+            this.updateSyncStatus('synced');
             this.refreshUI();
         } catch (e) {
             console.error('Sync failed:', e);
+            this.updateSyncStatus('offline');
             this.refreshUI();
         }
-        console.log('=== Server sync completed ===');
     }
 
     refreshUI() {
@@ -173,9 +198,13 @@ class DataManager {
 
         try {
             console.log('Reset: sending default data to server...');
+            freshData.updated_at = Date.now();
             const response = await fetch('/api/data-sync', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-api-key': 'today-plan-secret-key'
+                },
                 body: JSON.stringify(freshData)
             });
 
