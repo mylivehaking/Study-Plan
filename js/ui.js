@@ -74,30 +74,29 @@ function renderWeeklyPage() {
 
     grid.innerHTML = '';
     
-    // ترتیب روزها از شنبه تا جمعه
-    const weekOrder = ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"];
+    // دریافت روز جاری
+    const dayIndex = new Date().getDay();
+    const dayKey = DAYS_FA[dayIndex];
     
-    weekOrder.forEach(dayKey => {
-        const dayBlocks = dataManager.data[dayKey] || [];
-        const dayCard = document.createElement('div');
-        dayCard.className = `day-column ${dayKey}`;
-        
-        let blocksHtml = dayBlocks.map(b => `
-            <div class="small-card ${b.type || ''}" style="margin-top: 8px; padding: 10px; box-shadow: none; border-width: 2px;">
-                <div style="font-weight: bold; font-size: 0.9rem;">${b.title}</div>
-                <div style="font-size: 0.75rem; color: var(--secondary-color);">${b.start} تا ${b.end}</div>
-            </div>
-        `).join('');
+    const dayBlocks = dataManager.data[dayKey] || [];
+    const dayCard = document.createElement('div');
+    dayCard.className = `day-column ${dayKey}`;
+    
+    let blocksHtml = dayBlocks.map(b => `
+        <div class="small-card ${b.type || ''}" style="margin-top: 8px; padding: 10px; box-shadow: none; border-width: 2px;">
+            <div style="font-weight: bold; font-size: 0.9rem;">${b.title}</div>
+            <div style="font-size: 0.75rem; color: var(--secondary-color);">${b.start} تا ${b.end}</div>
+        </div>
+    `).join('');
 
-        dayCard.innerHTML = `
-            <div class="day-header">
-                <strong>${DAYS_NAMES_FA[dayKey]}</strong>
-                <span style="font-size: 0.8rem; color: var(--secondary-color);">${dayBlocks.length} بازه</span>
-            </div>
-            <div class="day-blocks">${blocksHtml || '<div style="color: var(--secondary-color); font-size: 0.8rem; padding: 10px;">برنامه‌ای ثبت نشده</div>'}</div>
-        `;
-        grid.appendChild(dayCard);
-    });
+    dayCard.innerHTML = `
+        <div class="day-header">
+            <strong>${DAYS_NAMES_FA[dayKey]} (امروز)</strong>
+            <span style="font-size: 0.8rem; color: var(--secondary-color);">${dayBlocks.length} بازه</span>
+        </div>
+        <div class="day-blocks">${blocksHtml || '<div style="color: var(--secondary-color); font-size: 0.8rem; padding: 10px;">برنامه‌ای برای امروز ثبت نشده</div>'}</div>
+    `;
+    grid.appendChild(dayCard);
 }
 
 function updateTimerUI(timeStr) {
