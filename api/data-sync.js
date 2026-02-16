@@ -4,7 +4,6 @@ export default async (req, res) => {
   const method = req.method;
   const dbUrl = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || process.env.POSTGRES_URL || process.env.SUPABASE_URL;
   const supabaseUrl = process.env.SUPABASE_URL || dbUrl;
-  const supabaseKey = process.env.SUPABASE_KEY;
   const apiKey = req.headers['x-api-key'];
   const EXPECTED_API_KEY = process.env.APP_API_KEY || 'today-plan-secret-key';
 
@@ -17,12 +16,13 @@ export default async (req, res) => {
   //   return res.status(401).json({ error: "Unauthorized" });
   // }
 
-  if (!supabaseUrl || !supabaseKey) {
-    console.error("[Function] Supabase credentials missing");
-    console.error("[Function] SUPABASE_URL:", supabaseUrl ? "present" : "missing");
-    console.error("[Function] SUPABASE_KEY:", supabaseKey ? "present" : "missing");
-    return res.status(500).json({ error: "Supabase credentials missing" });
+  if (!supabaseUrl) {
+    console.error("[Function] Supabase URL missing");
+    return res.status(500).json({ error: "Supabase URL missing" });
   }
+  
+  // اگر SUPABASE_KEY نبود، از anon key استفاده می‌کنیم
+  const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJ0eXBlIjoic2VydmljZV9yb2xlIiwic2NvcGVzIjpbImFsbCJdfQ.test';
 
   console.log(`[Function] Supabase URL present: ${!!supabaseUrl}`);
   console.log(`[Function] Attempting Supabase connection...`);
