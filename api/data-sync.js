@@ -47,39 +47,29 @@ export default async (req, res) => {
     if (method === "POST") {
       let body = req.body;
       
-      // اگر body وجود نداشت یا Buffer بود
-      if (!body || Buffer.isBuffer(body)) {
-        try {
-          const rawBody = body ? body.toString() : '{}';
-          body = JSON.parse(rawBody);
-        } catch (e) {
-          console.error("[Function] Failed to parse body:", e);
-          return res.status(400).json({ error: "Invalid JSON in body" });
-        }
-      }
-      // اگر body رشته بود
-      else if (typeof body === 'string') {
+      // Handle potential string body from Vercel
+      if (typeof body === 'string') {
         try {
           body = JSON.parse(body);
         } catch (e) {
-          console.error("[Function] Failed to parse string body:", e);
-          return res.status(400).json({ error: "Invalid JSON string in body" });
+          return res.status(400).json({ error: "Invalid JSON" });
         }
       }
-      
-      // اگر body هنوز null/undefined است
+
       if (!body || typeof body !== 'object') {
-        return res.status(400).json({ error: "Body must be an object" });
+        return res.status(400).json({ error: "Invalid body format" });
       }
       
-      console.log("[Function] Body parsed successfully, keys:", Object.keys(body));
+      const content = JSON.stringify(body);
       
+      // Use simple INSERT with ON CONFLICT and direct string values
       await sql`
         INSERT INTO app_data (id, content, updated_at)
-        VALUES (${DATA_ID}, ${JSON.stringify(body)}::jsonb, CURRENT_TIMESTAMP)
+        VALUES (${DATA_ID}, ${content}, CURRENT_TIMESTAMP)
         ON CONFLICT (id) DO UPDATE
-        SET content = EXCLUDED.content, updated_at = CURRENT_TIMESTAMP;
+        SET content = ${content}, updated_at = CURRENT_TIMESTAMP;
       `;
+      
       return res.status(200).json({ success: true });
     }
 
