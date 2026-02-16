@@ -183,11 +183,11 @@ function sendNotification(message) {
     if (!enabled) return;
 
     if (Notification.permission === "granted") {
-        new Notification("Today Plan", { body: message, icon: 'assets/icons/icon.png' });
+        new Notification("Today Plan", { body: message, icon: 'assets/icons/icon.svg' });
     } else if (Notification.permission !== "denied") {
         Notification.requestPermission().then(permission => {
             if (permission === "granted") {
-                new Notification("Today Plan", { body: message, icon: 'assets/icons/icon.png' });
+                new Notification("Today Plan", { body: message, icon: 'assets/icons/icon.svg' });
             }
         });
     }

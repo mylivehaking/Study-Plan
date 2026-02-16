@@ -38,6 +38,16 @@ self.addEventListener('fetch', (event) => {
   // فقط GET
   if (req.method !== 'GET') return;
 
+  try {
+    const url = new URL(req.url);
+    if (url.pathname.startsWith('/api/')) {
+      event.respondWith(fetch(req));
+      return;
+    }
+  } catch (e) {
+    // ignore
+  }
+
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;

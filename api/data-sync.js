@@ -1,28 +1,29 @@
 const { createClient } = require('@supabase/supabase-js');
 
-export default async (req, res) => {
+module.exports = async (req, res) => {
   const method = req.method;
-  const dbUrl = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || process.env.POSTGRES_URL || process.env.SUPABASE_URL;
-  const supabaseUrl = dbUrl; // مستقیماً از DATABASE_URL استفاده می‌کنیم
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
   const apiKey = req.headers['x-api-key'];
-  const EXPECTED_API_KEY = process.env.APP_API_KEY || 'today-plan-secret-key';
+  const EXPECTED_API_KEY = process.env.APP_API_KEY;
 
   console.log(`[Function] Method: ${method} - Path: ${req.url}`);
   console.log(`[Function] Header API Key: ${apiKey}`);
 
-  // بررسی امنیت API - فعلاً غیرفعال برای تست
-  // if (apiKey !== EXPECTED_API_KEY) {
-  //   console.error(`[Function] Unauthorized: Received "${apiKey}", Expected "${EXPECTED_API_KEY}"`);
-  //   return res.status(401).json({ error: "Unauthorized" });
-  // }
+  if (EXPECTED_API_KEY && apiKey !== EXPECTED_API_KEY) {
+    console.error(`[Function] Unauthorized: Received "${apiKey}", Expected "${EXPECTED_API_KEY}"`);
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
   if (!supabaseUrl) {
     console.error("[Function] Supabase URL missing");
     return res.status(500).json({ error: "Supabase URL missing" });
   }
-  
-  // اگر SUPABASE_KEY نبود، از anon key استفاده می‌کنیم
-  const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJ0eXBlIjoic2VydmljZV9yb2xlIiwic2NvcGVzIjpbImFsbCJdfQ.test';
+
+  if (!supabaseKey) {
+    console.error("[Function] Supabase key missing");
+    return res.status(500).json({ error: "Supabase key missing" });
+  }
 
   console.log(`[Function] Supabase URL present: ${!!supabaseUrl}`);
   console.log(`[Function] Attempting Supabase connection...`);

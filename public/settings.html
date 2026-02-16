@@ -5,9 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تنظیمات - Today Plan</title>
     <meta name="theme-color" content="#3b82f6">
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark') document.documentElement.classList.add('dark');
+        } catch (e) {}
+      })();
+    </script>
     <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="prefetch" href="index.html" as="document">
+    <link rel="prefetch" href="weekly.html" as="document">
 </head>
 <body>
     <div class="app-container">

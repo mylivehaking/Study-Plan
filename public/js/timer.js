@@ -57,12 +57,16 @@ class Timer {
 
     static getSecondsBetween(startTimeStr, endTimeStr) {
         const now = new Date();
-        
+
         const [endH, endM] = endTimeStr.split(':').map(Number);
-        
-        const endDate = new Date();
+
+        const endDate = new Date(now);
         endDate.setHours(endH, endM, 0, 0);
-        
+
+        if (endDate.getTime() <= now.getTime()) {
+            endDate.setDate(endDate.getDate() + 1);
+        }
+
         const diff = endDate.getTime() - now.getTime();
         return Math.max(0, Math.floor(diff / 1000));
     }
