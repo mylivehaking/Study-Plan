@@ -65,10 +65,8 @@ const DAYS_NAMES_FA = {
 class DataManager {
     constructor() {
         this.data = this.loadData();
-        // ابتدا دیتا را از سرور می‌گیریم و بعد UI را رندر می‌کنیم
-        this.syncWithServer().then(() => {
-            console.log('Initial sync completed');
-        });
+        // سینک با سرور برای Netlify بود؛ روی Vercel فقط از localStorage استفاده می‌کنیم
+        this.refreshUI();
     }
 
     loadData() {
@@ -77,69 +75,12 @@ class DataManager {
     }
 
     async saveData() {
-        console.log('Attempting to save data to server...');
         localStorage.setItem('today_plan_data', JSON.stringify(this.data));
-        
-        try {
-            const response = await fetch('/api/data-sync', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(this.data)
-            });
-            console.log('Server response status:', response.status);
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Server error: ${errorText}`);
-            }
-            console.log('Data synced to Netlify DB');
-        } catch (e) {
-            console.error('Failed to sync with Netlify:', e);
-        }
+        // در حال حاضر سینک سرور غیر فعال است
     }
 
     async syncWithServer() {
-        console.log('=== Starting server sync ===');
-        try {
-            // اضافه کردن یک پارامتر رندوم برای جلوگیری از کش مرورگر
-            const response = await fetch(`/api/data-sync?t=${Date.now()}`);
-            console.log('Response status:', response.status);
-            console.log('Response ok:', response.ok);
-            
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Server error response:', errorText);
-                throw new Error(`Server responded with ${response.status}`);
-            }
-            
-            const serverData = await response.json();
-            console.log('Data received from server:', serverData);
-            
-            // بررسی دقیق‌تر: آیا حداقل یک فعالیت "انجام شده" در کل دیتا وجود دارد؟
-            const hasAnyDone = serverData && Object.values(serverData).some(day => 
-                Array.isArray(day) && day.some(block => block.done === true)
-            );
-
-            if (hasAnyDone) {
-                console.log('Valid progress found on server, updating local state...');
-                this.data = serverData;
-                localStorage.setItem('today_plan_data', JSON.stringify(this.data));
-            } else {
-                console.log('No progress found on server. Keeping local data.');
-                // اگر دیتای محلی ما جلوتر است (تیک دارد)، آن را آپلود کنیم
-                const hasLocalProgress = Object.values(this.data).some(day => 
-                    Array.isArray(day) && day.some(block => block.done === true)
-                );
-                if (hasLocalProgress) {
-                    console.log('Local data has progress, uploading to server...');
-                    await this.saveData();
-                }
-            }
-
-            this.refreshUI();
-        } catch (e) {
-            console.error('Sync failed:', e);
-        }
-        console.log('=== Server sync completed ===');
+        // تابع خالی برای سازگاری؛ دیگر به سرور درخواست نمی4131332a4a45
     }
 
     refreshUI() {
