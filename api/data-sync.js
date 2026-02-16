@@ -2,7 +2,7 @@ const { createClient } = require('@supabase/supabase-js');
 
 export default async (req, res) => {
   const method = req.method;
-  const dbUrl = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.SUPABASE_URL;
+  const dbUrl = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || process.env.POSTGRES_URL || process.env.SUPABASE_URL;
   const supabaseUrl = process.env.SUPABASE_URL || dbUrl;
   const supabaseKey = process.env.SUPABASE_KEY;
   const apiKey = req.headers['x-api-key'];
