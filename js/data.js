@@ -128,11 +128,11 @@ class DataManager {
         return this.data[dayKey] || [];
     }
 
-    markAsDone(dayKey, blockId) {
+    async markAsDone(dayKey, blockId) {
         const block = this.data[dayKey].find(b => b.id === blockId);
         if (block) {
             block.done = true;
-            this.saveData();
+            await this.saveData(); // صبر برای اطمینant از ارسال به سرور
         }
     }
 

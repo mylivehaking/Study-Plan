@@ -149,11 +149,11 @@ function resumeTimerForBlock(block, endTime) {
     updateStartStopButton(true);
 }
 
-function markBlockAsDone(blockId) {
+async function markBlockAsDone(blockId) {
     const dayIndex = new Date().getDay();
     const dayKey = DAYS_FA[dayIndex];
     
-    dataManager.markAsDone(dayKey, blockId);
+    await dataManager.markAsDone(dayKey, blockId);
     
     if (appTimer) {
         appTimer.stop();
