@@ -146,8 +146,9 @@ class DataManager {
         if (typeof renderWeeklyPage === 'function') {
             renderWeeklyPage();
         }
-        // اگر در صفحه ایندکس هستیم، بلاک جاری را هم پیدا کن
-        if (typeof findAndDisplayCurrentBlock === 'function') {
+        // اگر در صفحه ایندکس هستیم (وجود بلاک فعلی)، بلاک جاری را هم پیدا کن
+        const hasCurrentBlockEl = document.getElementById('current-block') || document.getElementById('block-title');
+        if (hasCurrentBlockEl && typeof findAndDisplayCurrentBlock === 'function') {
             const todaySchedule = this.getTodaySchedule();
             findAndDisplayCurrentBlock(todaySchedule);
         }
@@ -191,7 +192,12 @@ class DataManager {
         // بعد از تلاش برای آپدیت سرور، حتماً لوکال را هم ریست کن
         this.data = freshData;
         localStorage.setItem('today_plan_data', JSON.stringify(this.data));
-        this.refreshUI();
+
+        // فقط اگر در صفحه امروز (index) هستیم، UI را رفرش کن
+        const hasCurrentBlockEl = document.getElementById('current-block') || document.getElementById('block-title');
+        if (hasCurrentBlockEl) {
+            this.refreshUI();
+        }
     }
 }
 
