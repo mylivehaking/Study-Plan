@@ -23,17 +23,24 @@ export default async (req, context) => {
 
   try {
     if (method === "GET") {
+      console.log("Fetching data for ID:", DATA_ID);
       const result = await sql`SELECT content FROM app_data WHERE id = ${DATA_ID}`;
+      console.log("DB Result:", JSON.stringify(result));
+      
       const data = result.length > 0 ? result[0].content : null;
       
       return new Response(JSON.stringify(data || {}), {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache" 
+        },
       });
     }
 
     if (method === "POST") {
       const body = await req.json();
+      console.log("Saving data for ID:", DATA_ID);
       
       await sql`
         INSERT INTO app_data (id, content, updated_at)
@@ -41,6 +48,7 @@ export default async (req, context) => {
         ON CONFLICT (id) DO UPDATE
         SET content = EXCLUDED.content, updated_at = CURRENT_TIMESTAMP;
       `;
+      console.log("Data saved successfully");
 
       return new Response(JSON.stringify({ success: true }), {
         status: 200,

@@ -93,28 +93,41 @@ class DataManager {
     }
 
     async syncWithServer() {
+        console.log('Fetching data from server...');
         try {
-            const response = await fetch('/api/data');
-            if (response.ok) {
-                const serverData = await response.json();
-                
-                // اگر دیتای سرور وجود داشت و خالی نبود، جایگزین دیتای محلی شود
-                if (serverData && Object.keys(serverData).length > 0 && 
-                    (serverData.saturday || serverData.sunday)) { // چک کردن فیلدهای اصلی
-                    this.data = serverData;
-                    localStorage.setItem('today_plan_data', JSON.stringify(this.data));
-                    console.log('Data restored from Netlify DB');
-                } else {
-                    // اگر سرور خالی بود، دیتای فعلی (محلی) را بفرست بالا
-                    console.log('Server is empty, uploading local data...');
+            // اضافه کردن یک پارامتر رندوم برای جلوگیری از کش مرورگر
+            const response = await fetch(`/api/data?t=${Date.now()}`);
+            if (!response.ok) {
+                throw new Error(`Server responded with ${response.status}`);
+            }
+            
+            const serverData = await response.json();
+            console.log('Data received from server:', serverData);
+            
+            // بررسی دقیق‌تر: آیا حداقل یک فعالیت "انجام شده" در کل دیتا وجود دارد؟
+            const hasAnyDone = serverData && Object.values(serverData).some(day => 
+                Array.isArray(day) && day.some(block => block.done === true)
+            );
+
+            if (hasAnyDone) {
+                console.log('Valid progress found on server, updating local state...');
+                this.data = serverData;
+                localStorage.setItem('today_plan_data', JSON.stringify(this.data));
+            } else {
+                console.log('No progress found on server. Keeping local data.');
+                // اگر دیتای محلی ما جلوتر است (تیک دارد)، آن را آپلود کنیم
+                const hasLocalProgress = Object.values(this.data).some(day => 
+                    Array.isArray(day) && day.some(block => block.done === true)
+                );
+                if (hasLocalProgress) {
+                    console.log('Local data has progress, uploading to server...');
                     await this.saveData();
                 }
-
-                // در هر صورت UI را با آخرین دیتا آپدیت کن
-                this.refreshUI();
             }
+
+            this.refreshUI();
         } catch (e) {
-            console.warn('Could not sync from server, using local data:', e);
+            console.error('Sync failed:', e);
         }
     }
 
