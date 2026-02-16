@@ -6,6 +6,8 @@ export default async (req, context) => {
   // دیتابیس نتلیفای به طور خودکار از NETLIFY_DATABASE_URL استفاده می‌کند
   const sql = neon();
 
+  console.log(`[Edge Function] Method: ${method} - Path: ${new URL(req.url).pathname}`);
+
   // ایجاد جدول اگر وجود نداشته باشد
   try {
     await sql`
@@ -15,19 +17,23 @@ export default async (req, context) => {
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
+    console.log("[Edge Function] Table check/create successful");
   } catch (e) {
-    console.error("Error creating table:", e);
+    console.error("[Edge Function] Error creating table:", e);
+    return new Response(JSON.stringify({ error: "Database initialization failed", details: e.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 
   const DATA_ID = "today_plan_default";
 
   try {
     if (method === "GET") {
-      console.log("Fetching data for ID:", DATA_ID);
+      console.log("[Edge Function] Fetching data for ID:", DATA_ID);
       const result = await sql`SELECT content FROM app_data WHERE id = ${DATA_ID}`;
-      console.log("DB Result:", JSON.stringify(result));
-      
       const data = result.length > 0 ? result[0].content : null;
+      console.log("[Edge Function] Get result:", data ? "Data found" : "No data");
       
       return new Response(JSON.stringify(data || {}), {
         status: 200,
@@ -40,7 +46,7 @@ export default async (req, context) => {
 
     if (method === "POST") {
       const body = await req.json();
-      console.log("Saving data for ID:", DATA_ID);
+      console.log("[Edge Function] Saving data for ID:", DATA_ID);
       
       await sql`
         INSERT INTO app_data (id, content, updated_at)
@@ -48,7 +54,7 @@ export default async (req, context) => {
         ON CONFLICT (id) DO UPDATE
         SET content = EXCLUDED.content, updated_at = CURRENT_TIMESTAMP;
       `;
-      console.log("Data saved successfully");
+      console.log("[Edge Function] Save successful");
 
       return new Response(JSON.stringify({ success: true }), {
         status: 200,
@@ -58,7 +64,7 @@ export default async (req, context) => {
 
     return new Response("Method Not Allowed", { status: 405 });
   } catch (error) {
-    console.error("DB Error:", error);
+    console.error("[Edge Function] Runtime Error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
